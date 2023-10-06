@@ -19,7 +19,9 @@
 - [Expression](#expression)
 - [Comment](#comment)
 - [Assign Variable](#assign-variable)
+- [Function](#function)
 - [Function End](#function-end)
+- [Abandoning Feature](#abandoning-feature)
 
 # Inspiration
 - Dreambirb
@@ -56,7 +58,6 @@ DO NOT ADD UNNECESSARY FEATURES OR BLOAT STUFFS
 - process (ps) / function (fn) - first word last word
 - async / const / mut
 - private / public / protected
-- let something = 0;
 
 # Design System
 - cplxendc_carbon - inspired from IBM Carbon (single file and minimal performance)
@@ -103,11 +104,23 @@ The standard from C and C++ is enough, don't need to reinvent stuff
 Write function like
 
 ```rust
-let i32_pSomething = 3 as int*;
+const i32_pSomething = 3 as int*;
+mut myCar = new Car();
+mut i32_pSomething = 3 as int*;
 ```
 
+# Function
+
+```rust
+Get_Something() : {int, int} {
+    return 3, 7;
+}
+```
 
 # Function End
 The standard from C and C++ is enough, don't need to reinvent stuff
 - ; (end at) 
 - ! (priority, more just means below like header, max limit 3, only usable in process or function)
+
+# Abandoning Feature
+- let / var keyword, it just too redundant
