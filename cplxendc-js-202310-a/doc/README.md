@@ -33,7 +33,7 @@
 
 # Design Philosophy
 - Focus on what matter the most, User Create Function Name rather then seeing standard type later
-- 
+- Portable exe, everywhere and everywhere
 - Backend Code is seperate from Frontend Code
 - High Performance, Precision like C
 
