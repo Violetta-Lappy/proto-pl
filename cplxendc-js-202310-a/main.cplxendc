@@ -1,7 +1,6 @@
 #include <path/main.cplxendc> from url
 using System;
 
-[Something]
 header Main {
 public:
     Main();
@@ -10,11 +9,10 @@ public:
     something : int[];
 public:
     NoneFunction();
-    HelloWorld() : void;
+    HelloWorld(i32_something : int, str_game : string) : void;
     main(int argc, char[] argv): int;
 }
 
-[Something]
 class Main : Main {    
     NoneFunction() {
     }
@@ -24,7 +22,7 @@ class Main : Main {
         print("hello world");
     }
 
-    main(int argc, char[] argv): int {
+    main(argc : int, argv : char[]): int {
         HelloWorld();
         return 0;
     }

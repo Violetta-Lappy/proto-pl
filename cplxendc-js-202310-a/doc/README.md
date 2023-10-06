@@ -7,6 +7,7 @@
 - [CPLXENDC](#cplxendc)
 - [Table of Contents](#table-of-contents)
 - [Inspiration](#inspiration)
+- [Design Philosophy](#design-philosophy)
 - [Introduction](#introduction)
 - [Important](#important)
 - [Features](#features)
@@ -15,13 +16,24 @@
 - [Build System](#build-system)
 - [Include](#include)
 - [Variable Keywords](#variable-keywords)
+- [Expression](#expression)
+- [Comment](#comment)
+- [Assign Variable](#assign-variable)
+- [Function End](#function-end)
 
 # Inspiration
+- Dreambirb
 - Flutter / Dart
 - Rust
 - WebGPU
 - IBM Carbon Design System
 - Renderer opposed to Webview
+
+# Design Philosophy
+- Focus on what matter the most, User Create Function Name rather then seeing standard type later
+- 
+- Backend Code is seperate from Frontend Code
+- High Performance, Precision like C
 
 # Introduction
 cplxendc is a programming language designed for high performance (including pointer manipulation)
@@ -45,7 +57,6 @@ DO NOT ADD UNNECESSARY FEATURES OR BLOAT STUFFS
 - async / const / mut
 - private / public / protected
 - let something = 0;
-- always end with ; (end at) or ! (priority, more just means below like header, max limit 3, only usable in process or function)
 
 # Design System
 - cplxendc_carbon - inspired from IBM Carbon (single file and minimal performance)
@@ -77,3 +88,26 @@ Use the main C++ but without bullshit syntax, a oneway to write this thing
 - double
 - char
 - string
+
+# Expression
+- mut
+- const (immutable)
+- async
+
+# Comment
+The standard from C and C++ is enough, don't need to reinvent stuff
+- //
+- /**/
+
+# Assign Variable
+Write function like
+
+```rust
+let i32_pSomething = 3 as int*;
+```
+
+
+# Function End
+The standard from C and C++ is enough, don't need to reinvent stuff
+- ; (end at) 
+- ! (priority, more just means below like header, max limit 3, only usable in process or function)
