@@ -24,31 +24,9 @@ function InputStream(input) {
     }
 }
 
-function read_next() {
-    read_while(is_whitespace);
-    if (input.eof()) return null;
-    var ch = input.peek();
-    if (ch == "#") {
-        skip_comment();
-        return read_next();
-    }
-    if (ch == '"') return read_string();
-    if (is_digit(ch)) return read_number();
-    if (is_id_start(ch)) return read_ident();
-    if (is_punc(ch)) return {
-        type  : "punc",
-        value : input.next()
-    };
-    if (is_op_char(ch)) return {
-        type  : "op",
-        value : read_while(is_op_char)
-    };
-    input.croak("Can't handle character: " + ch);
-}
-
 function TokenStream(input) {
     var current = null;
-    var keywords = " if then else lambda λ true false ";
+    var keywords = " if then else lambda Î» true false ";
     return {
         next  : next,
         peek  : peek,
@@ -62,7 +40,7 @@ function TokenStream(input) {
         return /[0-9]/i.test(ch);
     }
     function is_id_start(ch) {
-        return /[a-zλ_]/i.test(ch);
+        return /[a-zÎ»_]/i.test(ch);
     }
     function is_id(ch) {
         return is_id_start(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
@@ -160,7 +138,6 @@ function TokenStream(input) {
     }
 }
 
-var FALSE = { type: "bool", value: false };
 function parse(input) {
     var PRECEDENCE = {
         "=": 1,
@@ -170,6 +147,7 @@ function parse(input) {
         "+": 10, "-": 10,
         "*": 20, "/": 20, "%": 20,
     };
+    var FALSE = { type: "bool", value: false };
     return parse_toplevel();
     function is_punc(ch) {
         var tok = input.peek();
@@ -282,7 +260,7 @@ function parse(input) {
             if (is_punc("{")) return parse_prog();
             if (is_kw("if")) return parse_if();
             if (is_kw("true") || is_kw("false")) return parse_bool();
-            if (is_kw("lambda") || is_kw("λ")) {
+            if (is_kw("lambda") || is_kw("Î»")) {
                 input.next();
                 return parse_lambda();
             }
@@ -312,3 +290,167 @@ function parse(input) {
         });
     }
 }
+
+function Environment(parent) {
+    this.vars = Object.create(parent ? parent.vars : null);
+    this.parent = parent;
+}
+Environment.prototype = {
+    extend: function() {
+        return new Environment(this);
+    },
+    lookup: function(name) {
+        var scope = this;
+        while (scope) {
+            if (Object.prototype.hasOwnProperty.call(scope.vars, name))
+                return scope;
+            scope = scope.parent;
+        }
+    },
+    get: function(name) {
+        if (name in this.vars)
+            return this.vars[name];
+        throw new Error("Undefined variable " + name);
+    },
+    set: function(name, value) {
+        var scope = this.lookup(name);
+        if (!scope && this.parent)
+            throw new Error("Undefined variable " + name);
+        return (scope || this).vars[name] = value;
+    },
+    def: function(name, value) {
+        return this.vars[name] = value;
+    }
+};
+
+function evaluate(exp, env) {
+    switch (exp.type) {
+      case "num":
+      case "str":
+      case "bool":
+        return exp.value;
+
+      case "var":
+        return env.get(exp.value);
+
+      case "assign":
+        if (exp.left.type != "var")
+            throw new Error("Cannot assign to " + JSON.stringify(exp.left));
+        return env.set(exp.left.value, evaluate(exp.right, env));
+
+      case "binary":
+        return apply_op(exp.operator,
+                        evaluate(exp.left, env),
+                        evaluate(exp.right, env));
+
+      case "lambda":
+        return make_lambda(env, exp);
+
+      case "if":
+        var cond = evaluate(exp.cond, env);
+        if (cond !== false) return evaluate(exp.then, env);
+        return exp.else ? evaluate(exp.else, env) : false;
+
+      case "prog":
+        var val = false;
+        exp.prog.forEach(function(exp){ val = evaluate(exp, env) });
+        return val;
+
+      case "call":
+        var func = evaluate(exp.func, env);
+        return func.apply(null, exp.args.map(function(arg){
+            return evaluate(arg, env);
+        }));
+
+      default:
+        throw new Error("I don't know how to evaluate " + exp.type);
+    }
+}
+
+function apply_op(op, a, b) {
+    function num(x) {
+        if (typeof x != "number")
+            throw new Error("Expected number but got " + x);
+        return x;
+    }
+    function div(x) {
+        if (num(x) == 0)
+            throw new Error("Divide by zero");
+        return x;
+    }
+    switch (op) {
+      case "+": return num(a) + num(b);
+      case "-": return num(a) - num(b);
+      case "*": return num(a) * num(b);
+      case "/": return num(a) / div(b);
+      case "%": return num(a) % div(b);
+      case "&&": return a !== false && b;
+      case "||": return a !== false ? a : b;
+      case "<": return num(a) < num(b);
+      case ">": return num(a) > num(b);
+      case "<=": return num(a) <= num(b);
+      case ">=": return num(a) >= num(b);
+      case "==": return a === b;
+      case "!=": return a !== b;
+    }
+    throw new Error("Can't apply operator " + op);
+}
+
+function make_lambda(env, exp) {
+    function lambda() {
+        var names = exp.vars;
+        var scope = env.extend();
+        for (var i = 0; i < names.length; ++i)
+            scope.def(names[i], i < arguments.length ? arguments[i] : false);
+        return evaluate(exp.body, scope);
+    }
+    return lambda;
+}
+
+/* -----[ entry point for NodeJS ]----- */
+
+var globalEnv = new Environment();
+
+globalEnv.def("time", function(func){
+    try {
+        console.time("time");
+        return func();
+    } finally {
+        console.timeEnd("time");
+    }
+});
+
+if (typeof process != "undefined") (function(){
+    var util = require("util");
+    globalEnv.def("println", function(val){
+        util.puts(val);
+    });
+    globalEnv.def("print", function(val){
+        util.print(val);
+    });
+    var code = "";
+    process.stdin.setEncoding("utf8");
+    process.stdin.on("readable", function(){
+        var chunk = process.stdin.read();
+        if (chunk) code += chunk;
+    });
+    process.stdin.on("end", function(){
+        var ast = parse(TokenStream(InputStream(code)));
+        evaluate(ast, globalEnv);
+    });
+})();
+
+
+/*-----[Test Stuff]-----*/
+// some test code here
+var code = "sum = lambda(x, y) x + y; print(sum(2, 3));";
+// remember, parse takes a TokenStream which takes an InputStream
+var ast = parse(TokenStream(InputStream(code)));
+// create the global environment
+var globalEnv = new Environment();
+// define the "print" primitive function
+globalEnv.def("print", function(txt){
+  console.log(txt);
+});
+// run the evaluator
+evaluate(ast, globalEnv); // will print 5
