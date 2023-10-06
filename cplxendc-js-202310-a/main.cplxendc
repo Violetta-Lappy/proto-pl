@@ -1,0 +1,31 @@
+#include <path/main.cplxendc>
+using System;
+
+[Something]
+header Main {
+public:
+    Main();
+    ~Main();
+public:
+    something : int[];
+public:
+    NoneFunction();
+    HelloWorld() : void;
+    main(int argc, char[] argv): int;
+}
+
+[Something]
+class Main : Main {    
+    NoneFunction() {
+    }
+    
+    HelloWorld() : void {        
+        let something;
+        print("hello world");
+    }
+
+    main(int argc, char[] argv): int {
+        HelloWorld();
+        return 0;
+    }
+}
