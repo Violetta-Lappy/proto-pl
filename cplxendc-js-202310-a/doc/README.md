@@ -13,7 +13,7 @@
 - [Features](#features)
 - [Design System](#design-system)
 - [Folder](#folder)
-- [Build System](#build-system)
+- [2x Build System](#2x-build-system)
 - [Include](#include)
 - [Variable Keywords](#variable-keywords)
 - [Expression](#expression)
@@ -33,6 +33,7 @@
 
 # Design Philosophy
 - Focus on what matter the most, User Create Function Name rather then seeing standard type later
+- Everything must be consistence
 - Portable exe, everywhere and everywhere
 - Backend Code is seperate from Frontend Code
 - High Performance, Precision like C
@@ -72,9 +73,10 @@ Require the following folder to be create:
 - src (source code)
 - 3rdparty (package, external, vendor)
 
-# Build System
+# 2x Build System
 - 2x command (2x main.cplxendc -o output)
-- .2xconfig (work like cmake but more towards npm javascript and premake)
+- .2xbuildconfig (work like cmake but more towards npm javascript and premake) - build folder
+- .2xpackageconfig (html and npm syntax stuff - ^7.8.0, do not fucking work like python where all go too hell) - 3rdparty / package folder
 
 # Include
 Use the main C++ but without bullshit syntax, a oneway to write this thing 

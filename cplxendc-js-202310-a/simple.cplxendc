@@ -1,0 +1,31 @@
+#include <path/main.cplxendc>
+#include <package/something.cplxendc>
+
+header Header {
+public:
+    Header(arg_example : int);
+    ~Header(arg_example : int);
+public:
+    str_text : string = "something";
+public:
+    VoidFunction() : void;
+    HelloWorld(arg_text : string) : async void;    
+}
+
+class Class : Header {    
+    NoneFunction() : void {
+        println("Hello World");
+    }    
+    HelloWorld() : async void {        
+        something : int = 3;
+        println("hello world");
+    }    
+}
+
+main(argc : int, argv : char[]): int {
+
+    program = new Something();
+    program.HelloWorld();
+
+    return 0;
+}

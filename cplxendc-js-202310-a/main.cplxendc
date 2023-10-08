@@ -8,17 +8,17 @@ public:
 public:
     something : int[];
 public:
-    NoneFunction();
+    NoneFunction() : void;
     HelloWorld(i32_something : int, str_game : string) : void;
     main(int argc, char[] argv): int;
 }
 
 class Main : Main {    
-    NoneFunction() {
+    NoneFunction() : void {
     }
     
     HelloWorld() : void {        
-        let something;
+        something = 3 : string;
         print("hello world");
     }
 

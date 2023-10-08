@@ -1,0 +1,55 @@
+<package>
+    //major version allow
+    npm = ^7.8.0; 
+    //minor version allow
+    fmt = ~10.1.0;
+    //exact version only
+    rmlui = 10.1.0;
+    //your own package from sourcefile
+    mypkg {
+        simple.cplxendc
+        path/simple.cplxendc
+        {2X_SOURCE_DIR}/src/*.cplxendc      
+    }
+</package>
+
+<build>
+{
+    project 
+    {
+        //projectname
+        project1 
+        //sourcefile entry point
+        main.cplxendc
+        //packages
+        npm 
+        fmt
+    }        
+    sourcefile {        
+        simple.cplxendc
+        path/simple.cplxendc
+        {2X_SOURCE_DIR}/src/*.cplxendc        
+    }
+    option = {
+        -W BUILD_EXAMPLE true
+        -W BUILD_PROJECT true
+        -W BUILD_LIB true
+    }    
+}
+{
+    project 
+    {
+        //projectname
+        project2 
+        //sourcefile entry point
+        main.cplxendc
+        //packages
+        mypkg         
+    }        
+    sourcefile {        
+        src/*.cplxendc
+    }
+    option = {        
+    }    
+}
+</build>
